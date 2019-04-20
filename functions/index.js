@@ -23,12 +23,7 @@ Handlebars.registerPartial(
 
 app.use(cors);
 app.get("/", (request, response) => {
-  console.log.log(request);
-  response.render("index", {
-    data: {
-      author: "RAJU GAUTAM"
-    }
-  });
+  response.redirect(301, "/cached");
 });
 
 app.get("/cached", (request, response) => {
