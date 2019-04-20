@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "phone-number-84697"
+    "default": "phone-number-84697",
+    "staging": "phone-number-84697",
+    "phoneskill": "phone-number-84697"
   }
 }
