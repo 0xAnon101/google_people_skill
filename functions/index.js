@@ -1,39 +1,34 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
+const path = require("path");
+const exphbs = require("express-handlebars");
 const cors = require("cors")({ origin: true });
 const serviceAccount = require("./serviceAccountKey.json");
-const engines = require("consolidate");
-const Handlebars = require("handlebars");
-const path = require("path");
-const fs = require("fs");
+const logRouter = require("./routes/logRoute");
+const policyRouter = require("./routes/policyRoute");
 
 const app = express();
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG);
 adminConfig.credential = admin.credential.cert(serviceAccount);
 admin.initializeApp(adminConfig);
 
-app.engine("hbs", engines.handlebars);
+/**view engine set */
 app.set("views", "./views");
 app.set("view engine", "hbs");
-Handlebars.registerPartial(
-  "partial",
-  fs.readFileSync(path.join(__dirname, "/views/partials/partial.hbs"), "utf8")
-);
+const hbs = exphbs.create({
+  defaultLayout: "main.hbs",
+  partialsDir: ["views/partials/"]
+});
+app.engine("hbs", hbs.engine);
 
+/**middlewares  */
 app.use(cors);
-app.get("/", (request, response) => {
-  response.redirect(301, "/cached");
+app.use("/", logRouter);
+app.use("/privacyPolicy", policyRouter);
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "/assets/404.png"));
 });
 
-app.get("/cached", (request, response) => {
-  console.log(request);
-  response.set("Cache-Control", "public, max-age=300, s-maxage=600");
-  response.render("index", {
-    data: {
-      author: "RAJU GAUTAM"
-    }
-  });
-});
-
+/**export the instance on each cloud function request */
 exports.app = functions.https.onRequest(app);
