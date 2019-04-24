@@ -1,4 +1,5 @@
 const express = require("express");
+// const apicaller = require("./apiCaller");
 const fs = require("fs");
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.get("/", (re, res) => {
 });
 
 router.get("/phoneskill/log", (req, res) => {
+  apicaller();
   res.render("index", {
     data: {
       author: "RAJU GAUTAM"
