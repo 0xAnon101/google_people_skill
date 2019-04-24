@@ -95,3 +95,5 @@ const getPeopleDetails = (connections, service, name) => {
     )) ||
     console.log("Sorry ! That contact isnot linked to your account :(");
 };
+
+module.exports = authorize;
