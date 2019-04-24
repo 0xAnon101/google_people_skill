@@ -61,9 +61,8 @@ function listConnectionNames(auth) {
       if (err) return console.error("The API returned an error: " + err);
       const connections = await res.data.connections;
       if (connections) {
-        rl.question("Enter your contact name to get details: ", async name => {
-          let details = await getPeopleDetails(connections, service, name);
-          console.log("details:", details);
+        rl.question("Enter your contact name to get details: ", name => {
+          getPeopleDetails(connections, service, name);
         });
       } else {
         console.log("No connections found.");
@@ -72,27 +71,27 @@ function listConnectionNames(auth) {
   );
 }
 
-const getPeopleDetails = async (connections, service, name) => {
-  let output = [];
+const getPeopleDetails = (connections, service, name) => {
   let profile = connections.find(person => {
-    return person.names[0].givenName === name;
+    return (
+      person.names[0].givenName === name || person.names[0].displayName === name
+    );
   });
 
-  await service.people.get(
-    {
-      resourceName: profile.resourceName,
-      personFields: "names,phoneNumbers"
-    },
-    async (err, res) => {
-      if (err)
-        return console.error(
-          "something wrong happened:) people.get returned an error"
-        );
-      const peopleData = res.data;
-      console.log(peopleData);
-      output.push(await peopleData);
-    }
-  );
-  console.log("sadas", output);
-  return await output;
+  (profile &&
+    service.people.get(
+      {
+        resourceName: profile && profile.resourceName,
+        personFields: "names,phoneNumbers"
+      },
+      async (err, res) => {
+        if (err)
+          return console.error(
+            "something wrong happened:) people.get returned an error"
+          );
+        const peopleData = await res.data;
+        console.log(peopleData);
+      }
+    )) ||
+    console.log("Sorry ! That contact isnot linked to your account :(");
 };
