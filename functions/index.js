@@ -24,6 +24,16 @@ app.engine("hbs", hbs.engine);
 
 /**middlewares  */
 app.use(cors);
+
+app.get("/auth/handler", (req, res) => {
+  console.log(req, "////");
+  res.send("hahahhah");
+});
+
+app.get("/__/auth/handler", (req, res) => {
+  console.log(req, "////");
+  res.send("hahahhah");
+});
 app.use("/", logRouter);
 app.use("/privacyPolicy", policyRouter);
 app.use((req, res) => {
